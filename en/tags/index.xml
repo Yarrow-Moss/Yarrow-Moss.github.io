@@ -2,10 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Tags on 亚罗-Yarrow</title>
-        <link>https://AbsoluteZeroHeart.github.io/Yarrow_Blog/en/tags/</link>
+        <link>https://yarrow-moss.github.io/en/tags/</link>
         <description>Recent content in Tags on 亚罗-Yarrow</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
-        <copyright>亚罗-Yarrow</copyright><atom:link href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/en/tags/index.xml" rel="self" type="application/rss+xml" />
+        <copyright>亚罗-Yarrow</copyright><atom:link href="https://yarrow-moss.github.io/en/tags/index.xml" rel="self" type="application/rss+xml" />
     </channel>
 </rss>

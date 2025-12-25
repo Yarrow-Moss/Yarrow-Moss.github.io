@@ -2,70 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://AbsoluteZeroHeart.github.io/Yarrow_Blog/en/categories/</loc>
+    <loc>https://yarrow-moss.github.io/en/categories/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/categories/"
+                href="https://yarrow-moss.github.io/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-tw"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/zh-tw/categories/"
+                href="https://yarrow-moss.github.io/zh-tw/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ja"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/ja/categories/"
+                href="https://yarrow-moss.github.io/ja/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/en/categories/"
+                href="https://yarrow-moss.github.io/en/categories/"
                 />
   </url><url>
-    <loc>https://AbsoluteZeroHeart.github.io/Yarrow_Blog/en/tags/</loc>
+    <loc>https://yarrow-moss.github.io/en/tags/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/tags/"
+                href="https://yarrow-moss.github.io/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-tw"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/zh-tw/tags/"
+                href="https://yarrow-moss.github.io/zh-tw/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ja"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/ja/tags/"
+                href="https://yarrow-moss.github.io/ja/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/en/tags/"
+                href="https://yarrow-moss.github.io/en/tags/"
                 />
   </url><url>
-    <loc>https://AbsoluteZeroHeart.github.io/Yarrow_Blog/en/</loc>
+    <loc>https://yarrow-moss.github.io/en/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/"
+                href="https://yarrow-moss.github.io/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-tw"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/zh-tw/"
+                href="https://yarrow-moss.github.io/zh-tw/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ja"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/ja/"
+                href="https://yarrow-moss.github.io/ja/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://AbsoluteZeroHeart.github.io/Yarrow_Blog/en/"
+                href="https://yarrow-moss.github.io/en/"
                 />
   </url>
 </urlset>
