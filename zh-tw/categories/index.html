@@ -1,20 +1,114 @@
 <!DOCTYPE html>
 <html lang="zh-tw" dir="ltr">
-    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+    <head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="演示說明">
 <title>Categories</title>
 
-<link rel='canonical' href='http://localhost:1313/zh-tw/categories/'>
+<link rel='canonical' href='https://yarrow-moss.github.io/zh-tw/categories/'>
 
-<link rel="stylesheet" href="/scss/style.min.833d6eed45de56f48306bf57268d5b8cdfc8a60e8e7bdc99810464fcd033f7c6.css"><meta property='og:title' content="Categories">
+<link rel="stylesheet" href="/scss/style.min.81579ea678e30582aa60028bfe3192821d6c0fee666ee279be318fb5b558916b.css"><meta property='og:title' content="Categories">
 <meta property='og:description' content="演示說明">
-<meta property='og:url' content='http://localhost:1313/zh-tw/categories/'>
-<meta property='og:site_name' content='亚罗-Yarrow'>
+<meta property='og:url' content='https://yarrow-moss.github.io/zh-tw/categories/'>
+<meta property='og:site_name' content='亞羅-Yarrow'>
 <meta property='og:type' content='website'><meta property='og:updated_time' content=' 2020-09-09T00:00:00&#43;00:00 '/>
 <meta name="twitter:title" content="Categories">
-<meta name="twitter:description" content="演示說明"><link rel="alternate" type="application/rss&#43;xml" href="http://localhost:1313/zh-tw/categories/index.xml">
+<meta name="twitter:description" content="演示說明"><link rel="alternate" type="application/rss&#43;xml" href="https://yarrow-moss.github.io/zh-tw/categories/index.xml">
     <link rel="shortcut icon" href="/favicon.png" />
 
+<link rel="stylesheet" href="/katex/katex.min.css">
+
+<script defer src="/katex/katex.min.js"></script>
+<script defer src="/katex/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body,{
+          delimiters:[
+            {left:'$$', right:'$$', display:true},
+            {left:'$', right:'$', display:false},
+            {left:'\\(', right:'\\)', display:false},
+            {left:'\\[', right:'\\]', display:true}
+          ],
+          throwOnError:false,
+          strict: false
+        });">
+</script>
+
+
+
+
+<script defer src="/mermaid/mermaid.min.js"></script>
+<script>
+
+window.addEventListener('load', function() {
+  if (typeof mermaid !== 'undefined') {
+    console.log('Mermaid loaded, version:', mermaid.version);
+    
+    
+    function getTheme() {
+      const scheme = document.documentElement.dataset.scheme;
+      if (scheme === 'dark' || 
+          (scheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        return 'dark';
+      }
+      return 'default';
+    }
+    
+    
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: getTheme(),
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis'
+      },
+      securityLevel: 'loose',
+      logLevel: 'error'
+    });
+    
+    
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName === 'data-scheme') {
+          setTimeout(() => {
+            mermaid.initialize({
+              ...mermaid.mermaidAPI.getConfig(),
+              theme: getTheme()
+            });
+          }, 300);
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-scheme']
+    });
+  } else {
+    console.error('Mermaid library not loaded');
+  }
+});
+</script>
+
+
+
+<link rel="stylesheet"
+      href="/highlight/styles/github-dark.min.css">
+
+<script defer src="/highlight/highlight.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.hljs) {
+    
+    hljs.configure({
+      languages: ['javascript', 'python', 'cpp', 'java', 'bash', 'html', 'css', 'json', 'yaml', 'markdown']
+    });
+    
+    
+    document.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightElement(block);
+    });
+  }
+});
+</script>
     </head>
     <body class="">
     <script>
@@ -56,7 +150,7 @@
                     
                     
                         
-                        <img src="/img/avatar_hu_b744811bdf43e41b.jpg" width="300"
+                        <img src="/img/avatar_hu16507237040225701895.jpg" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -69,7 +163,7 @@
         
         
         <div class="site-meta">
-            <h1 class="site-name"><a href="/zh-tw">亚罗-Yarrow</a></h1>
+            <h1 class="site-name"><a href="/zh-tw">亞羅-Yarrow</a></h1>
             <h2 class="site-description">演示說明</h2>
         </div>
     </header><ol class="menu-social">
@@ -90,7 +184,7 @@
             
                 <li>
                     <a 
-                        href='https://www.douyin.com/user/MS4wLjABAAAAaWBHMYjfaJN34aCrci_aWVyr9e-zaNSUhhqmsk3_xMbhRmCBmSmLzPhzv0TowMWH?from_tab_name=main&amp;showTab=record'
+                        href='https://www.douyin.com/user/MS4wLjABAAAAaWBHMYjfaJN34aCrci_aWVyr9e-zaNSUhhqmsk3_xMbhRmCBmSmLzPhzv0TowMWH'
                         target="_blank"
                         title="douyin"
                         rel="me"
@@ -162,13 +256,13 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="http://localhost:1313/" >简体中文</option>
+                                    <option value="https://yarrow-moss.github.io/" >简体中文</option>
                                 
-                                    <option value="http://localhost:1313/en/" >English</option>
+                                    <option value="https://yarrow-moss.github.io/en/" >English</option>
                                 
-                                    <option value="http://localhost:1313/zh-tw/" selected>正體中文</option>
+                                    <option value="https://yarrow-moss.github.io/zh-tw/" selected>正體中文</option>
                                 
-                                    <option value="http://localhost:1313/ja/" >日本語</option>
+                                    <option value="https://yarrow-moss.github.io/ja/" >日本語</option>
                                 
                             </select>
                         </li>
@@ -329,7 +423,7 @@
                 src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
                 
                 >
-            </script><script type="text/javascript" src="/ts/main.cf0a7c7c60c58010f62129a46b52e540cabca0030c0112fffb14f5db492f8ef1.js" defer></script>
+            </script><script type="text/javascript" src="/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js" defer></script>
 <script>
     (function () {
         const customFont = document.createElement('link');
