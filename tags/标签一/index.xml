@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>标签一 on 亚罗.莫斯(Yarrow.Moss)</title>
-        <link>https://yarrow-moss.github.io/tags/%E6%A0%87%E7%AD%BE%E4%B8%80/</link>
-        <description>Recent content in 标签一 on 亚罗.莫斯(Yarrow.Moss)</description>
+        <title>标签一 on 亚罗.莫斯(Yaro.Moss)</title>
+        <link>https://yaro-moss.github.io/tags/%E6%A0%87%E7%AD%BE%E4%B8%80/</link>
+        <description>Recent content in 标签一 on 亚罗.莫斯(Yaro.Moss)</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
-        <copyright>亚罗.莫斯(Yarrow.Moss)</copyright>
-        <lastBuildDate>Wed, 31 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://yarrow-moss.github.io/tags/%E6%A0%87%E7%AD%BE%E4%B8%80/index.xml" rel="self" type="application/rss+xml" /><item>
+        <copyright>亚罗.莫斯(Yaro.Moss)</copyright>
+        <lastBuildDate>Wed, 31 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://yaro-moss.github.io/tags/%E6%A0%87%E7%AD%BE%E4%B8%80/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>文章标题（必填）</title>
-        <link>https://yarrow-moss.github.io/p/article-slug-url/</link>
+        <link>https://yaro-moss.github.io/p/article-slug-url/</link>
         <pubDate>Wed, 31 Dec 2025 00:00:00 +0000</pubDate>
         
-        <guid>https://yarrow-moss.github.io/p/article-slug-url/</guid>
-        <description>&lt;img src="https://yarrow-moss.github.io/images/cover.jpg" alt="Featured image of post 文章标题（必填）" /&gt;&lt;h2 id=&#34;引言可选但强烈推荐&#34;&gt;引言（可选但强烈推荐）
+        <guid>https://yaro-moss.github.io/p/article-slug-url/</guid>
+        <description>&lt;img src="https://yaro-moss.github.io/images/cover.jpg" alt="Featured image of post 文章标题（必填）" /&gt;&lt;h2 id=&#34;引言可选但强烈推荐&#34;&gt;引言（可选但强烈推荐）
 &lt;/h2&gt;&lt;p&gt;这里用 1–2 段话说明：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;这篇文章讲什么&lt;/li&gt;
