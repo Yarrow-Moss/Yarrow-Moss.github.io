@@ -351,9 +351,9 @@
         <li><a href="#外部链接测试">外部链接测试</a></li>
       </ol>
     </li>
-    <li><a href="#11-脚注测试">11. 脚注测试</a></li>
-    <li><a href="#14-表情符号测试">14. 表情符号测试</a></li>
-    <li><a href="#15-数学公式进阶测试">15. 数学公式进阶测试</a>
+    <li><a href="#10-脚注测试">10. 脚注测试</a></li>
+    <li><a href="#11-表情符号测试">11. 表情符号测试</a></li>
+    <li><a href="#12-数学公式进阶测试">12. 数学公式进阶测试</a>
       <ol>
         <li><a href="#傅里叶变换">傅里叶变换</a></li>
         <li><a href="#微分方程">微分方程</a></li>
@@ -964,9 +964,9 @@ $$<h2 id="5-图像测试">5. 图像测试
 <li><a class="link" href="https://www.markdownguide.org/"  target="_blank" rel="noopener"
     >Markdown 指南</a></li>
 </ul>
-<h2 id="11-脚注测试">11. 脚注测试
+<h2 id="10-脚注测试">10. 脚注测试
 </h2><p>这是一个带有脚注的示例<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。Hugo 是一个强大的静态网站生成器<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>。</p>
-<h2 id="14-表情符号测试">14. 表情符号测试
+<h2 id="11-表情符号测试">11. 表情符号测试
 </h2><p>Hugo 支持表情符号渲染 🎉</p>
 <p>常用表情符号：</p>
 <ul>
@@ -977,7 +977,7 @@ $$<h2 id="5-图像测试">5. 图像测试
 <li>🚀 快速</li>
 <li>💡 想法</li>
 </ul>
-<h2 id="15-数学公式进阶测试">15. 数学公式进阶测试
+<h2 id="12-数学公式进阶测试">12. 数学公式进阶测试
 </h2><h3 id="傅里叶变换">傅里叶变换
 </h3>$$
 \mathcal{F}\{f(t)\} = F(\omega) = \int_{-\infty}^{\infty} f(t) e^{-j\omega t} dt
@@ -1084,7 +1084,7 @@ $$<h2 id="注意事项">注意事项
         
     <script
     src="https://giscus.app/client.js"
-    data-repo="Yarrow-Moss/Yarrow-Moss.github.io"
+    data-repo="Yaro-Moss/Yaro-Moss.github.io"
     data-repo-id="R_kgDOQuw_0w"
     data-category="Announcements"
     data-category-id="DIC_kwDOQuw_084C0QIi"
@@ -1250,6 +1250,43 @@ $$<h2 id="注意事项">注意事项
         document.head.appendChild(customFont);
     }());
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+(function () {
+  function getMermaidTheme() {
+    const scheme = document.documentElement.getAttribute('data-scheme');
+    return scheme === 'dark' ? 'dark' : 'default';
+  }
+
+  function initMermaid() {
+    if (!window.mermaid) return;
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: getMermaidTheme(),
+      themeVariables: {
+        fontFamily: "JetBrains Mono"
+      }
+    });
+
+    mermaid.run({ querySelector: ".mermaid" });
+  }
+
+  document.addEventListener("DOMContentLoaded", initMermaid);
+
+  
+  const observer = new MutationObserver(function () {
+    initMermaid();
+  });
+
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-scheme']
+  });
+})();
+</script>
+
 
     </body>
 </html>

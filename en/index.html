@@ -282,5 +282,42 @@
     }());
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+(function () {
+  function getMermaidTheme() {
+    const scheme = document.documentElement.getAttribute('data-scheme');
+    return scheme === 'dark' ? 'dark' : 'default';
+  }
+
+  function initMermaid() {
+    if (!window.mermaid) return;
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: getMermaidTheme(),
+      themeVariables: {
+        fontFamily: "JetBrains Mono"
+      }
+    });
+
+    mermaid.run({ querySelector: ".mermaid" });
+  }
+
+  document.addEventListener("DOMContentLoaded", initMermaid);
+
+  
+  const observer = new MutationObserver(function () {
+    initMermaid();
+  });
+
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-scheme']
+  });
+})();
+</script>
+
+
     </body>
 </html>

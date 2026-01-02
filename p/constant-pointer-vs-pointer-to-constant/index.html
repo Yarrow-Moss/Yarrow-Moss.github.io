@@ -942,7 +942,7 @@
         
     <script
     src="https://giscus.app/client.js"
-    data-repo="Yarrow-Moss/Yarrow-Moss.github.io"
+    data-repo="Yaro-Moss/Yaro-Moss.github.io"
     data-repo-id="R_kgDOQuw_0w"
     data-category="Announcements"
     data-category-id="DIC_kwDOQuw_084C0QIi"
@@ -1108,6 +1108,43 @@
         document.head.appendChild(customFont);
     }());
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+(function () {
+  function getMermaidTheme() {
+    const scheme = document.documentElement.getAttribute('data-scheme');
+    return scheme === 'dark' ? 'dark' : 'default';
+  }
+
+  function initMermaid() {
+    if (!window.mermaid) return;
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: getMermaidTheme(),
+      themeVariables: {
+        fontFamily: "JetBrains Mono"
+      }
+    });
+
+    mermaid.run({ querySelector: ".mermaid" });
+  }
+
+  document.addEventListener("DOMContentLoaded", initMermaid);
+
+  
+  const observer = new MutationObserver(function () {
+    initMermaid();
+  });
+
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-scheme']
+  });
+})();
+</script>
+
 
     </body>
 </html>
