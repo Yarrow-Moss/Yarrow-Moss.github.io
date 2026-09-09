@@ -1,0 +1,2301 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="FastAPI 完整学习笔记：从一段 main.py 入手，拆解导入区、配置层、Pydantic 数据模型、依赖注入、APIRouter 路由、中间件、生命周期事件等 8 层架构，并补充运行测试、进阶机制与常见坑">
+<title>FastAPI完整学习笔记</title>
+
+<link rel='canonical' href='https://Yannick-Mo.github.io/p/fastapi%E5%AE%8C%E6%95%B4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/'>
+
+<link rel="stylesheet" href="/scss/style.min.22fe0601e48b9f23a7b6d2523f0f78450a0b5b3b25fdd49d655878cc28ca49b7.css"><meta property='og:title' content="FastAPI完整学习笔记">
+<meta property='og:description' content="FastAPI 完整学习笔记：从一段 main.py 入手，拆解导入区、配置层、Pydantic 数据模型、依赖注入、APIRouter 路由、中间件、生命周期事件等 8 层架构，并补充运行测试、进阶机制与常见坑">
+<meta property='og:url' content='https://Yannick-Mo.github.io/p/fastapi%E5%AE%8C%E6%95%B4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/'>
+<meta property='og:site_name' content='雅尼克.莫(Yannick.Mo)'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='FastAPI' /><meta property='article:tag' content='Python' /><meta property='article:tag' content='Pydantic' /><meta property='article:tag' content='依赖注入' /><meta property='article:tag' content='Web框架' /><meta property='article:tag' content='API' /><meta property='article:published_time' content='2026-03-11T00:00:00&#43;08:00'/><meta property='article:modified_time' content='2026-03-11T00:00:00&#43;08:00'/><meta property='og:image' content='https://Yannick-Mo.github.io/img/avatar.png' />
+<meta name="twitter:title" content="FastAPI完整学习笔记">
+<meta name="twitter:description" content="FastAPI 完整学习笔记：从一段 main.py 入手，拆解导入区、配置层、Pydantic 数据模型、依赖注入、APIRouter 路由、中间件、生命周期事件等 8 层架构，并补充运行测试、进阶机制与常见坑"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://Yannick-Mo.github.io/img/avatar.png' />
+    <link rel="shortcut icon" href="/favicon.png" />
+<script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@7/dist/turbo.es5-umd.min.js"></script><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/waifu.css">
+<script type="module" src="https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/waifu-tips.js"></script>
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu14133112665799786173.png" width="300"
+                            height="282" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😁</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">雅尼克.莫(Yannick.Mo)</a></h1>
+            <h2 class="site-description">欢迎来到我的网站</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/1399620506'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1766655316953" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4996" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M419.5 309.304c-17.514-9.487-35.029-18.974-52.543-28.583l-87.209-47.435c-11.798-6.447-16.663-16.299-9.973-28.462 6.69-12.284 17.88-13.136 29.434-6.81 68.113 37.096 136.347 74.072 204.338 111.655 17.393 9.609 48.773 3.892 59.842-12.406a66632.417 66632.417 0 0 0 104.115-151.55c1.216-1.825 2.432-3.65 3.648-5.352 9.852-13.745 21.164-17.393 31.38-9.366 11.799 9.366 9.853 20.434 2.19 31.624a18582.62 18582.62 0 0 0-42.205 61.788c-19.461 28.583-38.922 57.166-60.694 88.911h245.084c22.867 0 26.394 3.649 26.515 26.515 0.244 156.78 0.365 313.44 0.609 470.22 0 22.38-4.014 26.272-26.88 26.394-5.96 0-12.042 0.608-17.88-0.122-21.65-2.432-37.462-0.364-45.003 26.394-6.811 24.083-32.475 36.367-55.585 33.935-26.758-2.798-44.395-18.61-51.206-43.544-4.135-15.082-11.19-17.15-24.812-17.028-94.02 0.608-187.918 0.365-281.938 0.122-10.825 0-17.15 0.973-20.312 14.109-6.811 28.218-30.043 46.098-55.706 46.584-26.637 0.487-49.747-16.907-57.531-46.22-3.284-12.284-8.758-15.081-20.07-14.473-14.595 0.851-29.312 0.365-44.029 0.121-16.055-0.364-23.11-6.932-23.11-22.623 0.122-159.334 0.365-318.791 0.73-478.247 0-16.542 6.69-22.015 25.056-22.015 75.532-0.122 151.064 0 226.474 0h15.812c0.487-1.338 0.973-2.676 1.46-4.136z m417.555 490.29V349.076H188.648v450.516h648.407z m-520.94 37.948h-44.638c3.041 12.77 9.244 21.771 21.164 22.501 13.258 0.973 19.582-8.879 23.474-22.501z m394.445-0.122c4.5 13.623 10.582 23.596 23.961 22.623 12.042-0.851 17.637-10.217 21.286-22.623H710.56z" fill="#1296DB" p-id="4997"></path><path d="M513.399 768.578H252.746c-25.299 0-29.312-4.014-29.312-29.313 0.121-108.98 0.243-217.96 0.486-327.062 0-22.988 4.744-27.732 27.61-27.732h523.008c23.23 0 27.974 4.622 28.096 27.367 0.365 109.588 0.608 219.055 0.73 328.643 0 23.475-4.865 27.975-29.07 28.097H513.4z m250.678-38.557V423.393H262.234V730.02h501.843z" fill="#1296DB" p-id="4998"></path><path d="M515.71 675.653c-6.69 4.743-12.893 10.095-19.948 13.865-23.23 12.285-46.34 11.19-67.747-3.77-23.596-16.542-34.057-40.746-31.989-68.964 0.487-6.082 11.677-15.69 18.123-15.934 6.325-0.243 14.352 8.515 18.974 15.204 3.65 5.352 2.068 13.866 4.622 20.312 4.865 12.285 13.866 23.961 27.367 21.042 9.973-2.067 18.974-12.163 26.393-20.434 3.65-4.135 3.041-12.284 4.014-18.609 1.703-12.041 8.636-19.339 20.434-19.096 10.703 0.244 17.636 6.812 19.096 18.488 0.851 7.42 1.094 16.663 5.473 21.528 7.055 7.906 17.028 17.393 26.15 17.758 8.15 0.244 18.123-9.73 24.57-17.514 4.257-5.109 4.013-14.231 5.351-21.65 2.19-11.798 8.88-18.975 21.042-18.123 12.042 0.973 18.366 8.757 17.88 21.042-1.216 31.015-13.38 56.193-42.084 70.058-26.758 12.893-51.814 7.42-73.708-12.527-1.216-0.852-2.554-1.582-4.013-2.676z m214.068-116.035c0.365 18.366-14.596 28.461-28.461 20.555-37.097-21.163-73.586-43.421-109.954-65.801-9.608-5.96-11.676-15.69-6.081-25.542 5.716-10.096 15.812-12.772 25.177-7.42 37.462 21.65 74.56 43.908 111.413 66.653 4.257 2.798 6.325 9.244 7.906 11.555z m-316.602-70.667c3.406 3.406 12.163 8.15 13.136 13.988 1.095 6.932-2.554 18.974-7.906 21.65-32.232 16.541-65.315 31.38-98.52 46.097-10.095 4.5-21.164 1.095-23.718-9.852-1.703-7.176 1.338-20.677 6.447-23.353 33.204-17.028 67.504-31.745 101.439-47.192 1.46-0.608 3.162-0.486 9.122-1.338z" fill="#1296DB" p-id="4999"></path></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://www.douyin.com/user/MS4wLjABAAAAaWBHMYjfaJN34aCrci_aWVyr9e-zaNSUhhqmsk3_xMbhRmCBmSmLzPhzv0TowMWH'
+                        target="_blank"
+                        title="douyin"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1766656006310" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10109" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M890.368 431.1552a362.8544 362.8544 0 0 1-210.6368-66.2016c0 94.5152 0 188.9792 1.1776 283.4944 0 12.6464 0.6144 25.2928-0.5632 37.888a307.2 307.2 0 0 1-40.96 131.2256 288.2048 288.2048 0 0 1-79.4624 89.088A256 256 0 0 1 414.72 956.0064a308.7872 308.7872 0 0 1-78.2336-6.6048A282.112 282.112 0 0 1 235.52 905.472c-0.6144-0.6144-1.792-1.2288-1.792-1.8432a272.64 272.64 0 0 1-79.4624-86.6816A281.0368 281.0368 0 0 1 249.344 433.5616 282.112 282.112 0 0 1 434.7392 394.24v35.84c0.6144 15.0528 0 30.1056 0.6144 44.544v76.4416a107.776 107.776 0 0 0-60.16-1.792 155.8528 155.8528 0 0 0-65.024 31.2832 108.4928 108.4928 0 0 0-27.6992 34.304 133.9392 133.9392 0 0 0-13.2608 73.4208 129.1776 129.1776 0 0 0 28.928 66.2528 152.1664 152.1664 0 0 0 38.5024 31.8976 127.6928 127.6928 0 0 0 187.8016-111.36V287.8976c0.6144-74.0352 0-148.0704 0.6144-222.1056h152.8832a171.264 171.264 0 0 0 3.584 39.1168h0.6144a231.1168 231.1168 0 0 0 22.272 62.0032 187.5968 187.5968 0 0 0 67.4304 74.6496c1.792 1.1776 2.9696 3.0208 4.8128 4.1984a212.5824 212.5824 0 0 0 69.7856 28.3136 272.5888 272.5888 0 0 0 43.9296 4.8128z m0 0" fill="#6C6CEA" p-id="10110"></path><path d="M836.7104 336.5376a536.7808 536.7808 0 0 0-4.096-65.8432A221.6448 221.6448 0 0 1 776.6528 245.76c-1.8432-1.1776-3.0208-3.0208-4.8128-4.1984a187.5968 187.5968 0 0 1-67.4304-74.6496 231.1168 231.1168 0 0 1-22.272-62.0032h-0.6144a171.264 171.264 0 0 1-3.584-39.1168h-152.8832c-0.6144 74.0352 0 148.0704-0.6144 222.1056v387.6352a127.6928 127.6928 0 0 1-187.8016 111.36 152.1664 152.1664 0 0 1-38.5024-31.8976 129.1776 129.1776 0 0 1-28.928-66.2528 133.9392 133.9392 0 0 1 13.2608-73.4208 109.2096 109.2096 0 0 1 27.6992-34.304 155.9552 155.9552 0 0 1 64.9728-31.2832 107.9808 107.9808 0 0 1 60.2112 1.792V475.0848c-0.6144-14.4384 0-29.4912-0.6144-44.544V394.24a282.112 282.112 0 0 0-185.3952 39.3216 277.4528 277.4528 0 0 0-93.2864 93.2864 282.2656 282.2656 0 0 0-1.792 290.0992 273.6128 273.6128 0 0 0 16.1792 24.7296 525.056 525.056 0 0 0 506.88-128.4096c1.4848-8.9088 2.6624-17.8688 3.2768-26.9312 1.1776-12.5952 0.5632-25.2416 0.5632-37.888-1.1776-94.5152-1.1776-188.9792-1.1776-283.4944a363.8272 363.8272 0 0 0 149.2992 61.44 527.872 527.872 0 0 0 7.424-89.856z" fill="#757BF2" p-id="10111"></path><path d="M743.7312 220.16a201.8304 201.8304 0 0 1-39.3216-52.992 231.1168 231.1168 0 0 1-22.272-62.0032h-0.6144a171.264 171.264 0 0 1-3.584-39.1168h-152.8832c-0.6144 74.0352 0 148.0704-0.6144 222.1056v326.7584a526.2336 526.2336 0 0 0 155.2896-174.08V364.9536c8.9088 6.2976 18.176 12.032 27.648 17.4592a521.5232 521.5232 0 0 0 36.352-162.2528zM273.7152 709.4272a125.3376 125.3376 0 0 1-4.5056-20.48 133.9392 133.9392 0 0 1 13.2608-73.4208 109.2096 109.2096 0 0 1 27.6992-34.304 155.9552 155.9552 0 0 1 64.9728-31.2832 107.9808 107.9808 0 0 1 60.2112 1.792V475.0848c-0.6144-14.4384 0-29.4912-0.6144-44.544V394.24a282.112 282.112 0 0 0-185.3952 39.3216 277.4528 277.4528 0 0 0-93.2864 93.2864 284.3136 284.3136 0 0 0-39.68 174.9504 525.8752 525.8752 0 0 0 103.8336 10.24c18.0736 0.0512 35.7888-0.8704 53.504-2.6112z" fill="#8486F8" p-id="10112"></path><path d="M435.2 458.8032c0-9.3184 0-18.7904-0.3584-28.2624V394.24a282.112 282.112 0 0 0-185.4976 39.3216 277.4528 277.4528 0 0 0-93.2864 93.2864 288.1536 288.1536 0 0 0-20.48 40.4992A521.8304 521.8304 0 0 0 435.2 458.8032zM639.0272 65.792h-113.9712c-0.6144 74.0352 0 148.0704-0.6144 222.1056v83.2a522.24 522.24 0 0 0 114.5856-305.3056z" fill="#8D92F8" p-id="10113"></path></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Yannick-Mo'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页|home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E-about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于 | About</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档|Archive</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索|search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E6%8A%80%E6%9C%AF%E9%93%BE%E6%8E%A5links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>技术链接|Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://Yannick-Mo.github.io/" selected>简体中文</option>
+                                
+                                    <option value="https://Yannick-Mo.github.io/en/" >English</option>
+                                
+                                    <option value="https://Yannick-Mo.github.io/zh-tw/" >正體中文</option>
+                                
+                                    <option value="https://Yannick-Mo.github.io/ja/" >日本語</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#一fastapi-是什么">一、FastAPI 是什么</a>
+      <ol>
+        <li><a href="#11-与其他框架对比">1.1 与其他框架对比</a></li>
+      </ol>
+    </li>
+    <li><a href="#二分层架构总览">二、分层架构总览</a>
+      <ol>
+        <li><a href="#完整代码示例-mainpy">完整代码示例 (<code>main.py</code>)</a></li>
+      </ol>
+    </li>
+    <li><a href="#三逐层深度讲解">三、逐层深度讲解</a>
+      <ol>
+        <li><a href="#31-导入区--一切的起点">3.1 导入区 —— 一切的起点</a></li>
+        <li><a href="#32-配置层--集中管理可变设置">3.2 配置层 —— 集中管理可变设置</a></li>
+        <li><a href="#33-数据模型层pydantic-请求响应结构的合同">3.3 数据模型层（Pydantic）—— 请求/响应结构的&quot;合同&quot;</a></li>
+        <li><a href="#34-依赖注入层--把重复逻辑封装成零件">3.4 依赖注入层 —— 把重复逻辑封装成&quot;零件&quot;</a></li>
+        <li><a href="#35-路由层--注册处理函数的核心">3.5 路由层 —— &ldquo;注册处理函数&quot;的核心</a></li>
+        <li><a href="#36-主应用--中间件--整个程序的大总管">3.6 主应用 &amp; 中间件 —— 整个程序的大总管</a></li>
+        <li><a href="#37-生命周期事件--启动关闭钩子">3.7 生命周期事件 —— 启动/关闭钩子</a></li>
+        <li><a href="#38-分层关系总结表">3.8 分层关系总结表</a></li>
+        <li><a href="#39-一次请求的完整旅程">3.9 一次请求的完整旅程</a></li>
+      </ol>
+    </li>
+    <li><a href="#四运行与测试">四、运行与测试</a>
+      <ol>
+        <li><a href="#41-启动服务">4.1 启动服务</a></li>
+        <li><a href="#42-访问自动生成的文档">4.2 访问自动生成的文档</a></li>
+        <li><a href="#43-curl-测试">4.3 curl 测试</a></li>
+      </ol>
+    </li>
+    <li><a href="#五进阶机制解析">五、进阶机制解析</a>
+      <ol>
+        <li><a href="#51-查询参数与路径参数">5.1 查询参数与路径参数</a></li>
+        <li><a href="#52-错误处理">5.2 错误处理</a></li>
+        <li><a href="#53-后台任务与异步">5.3 后台任务与异步</a></li>
+        <li><a href="#54-认证方式对比">5.4 认证方式对比</a></li>
+      </ol>
+    </li>
+    <li><a href="#六常见坑与避坑指南">六、常见坑与避坑指南</a></li>
+    <li><a href="#七一个值得注意的细节">七、一个值得注意的细节</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/python/" >
+                Python
+            </a>
+        
+            <a href="/categories/web%E5%BC%80%E5%8F%91/" >
+                Web开发
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/fastapi%E5%AE%8C%E6%95%B4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">FastAPI完整学习笔记</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            FastAPI 完整学习笔记：从一段 main.py 入手，拆解导入区、配置层、Pydantic 数据模型、依赖注入、APIRouter 路由、中间件、生命周期事件等 8 层架构，并补充运行测试、进阶机制与常见坑
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2026-03-11T00:00:00&#43;08:00'>2026-03-11</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 11 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="-fastapi-完整学习笔记">🚀 FastAPI 完整学习笔记
+</h1><h2 id="一fastapi-是什么">一、FastAPI 是什么
+</h2><p>FastAPI 是一个基于 <strong>Python 类型提示（Type Hints）</strong> 的现代 Web 框架，用于构建高性能 API。它在 2018 年由 Sebastián Ramírez 发布，如今已成为 Python 后端最主流的框架之一。</p>
+<p><strong>官方四大特性：</strong></p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>快</strong></td>
+          <td>性能与 Go/Node.js 相当（基于 Starlette + Uvicorn 异步栈）</td>
+      </tr>
+      <tr>
+          <td><strong>快编码</strong></td>
+          <td>开发速度提升 200%~300%，代码量大幅减少</td>
+      </tr>
+      <tr>
+          <td><strong>少 Bug</strong></td>
+          <td>基于类型提示的自动校验，约减少 40% 人为错误</td>
+      </tr>
+      <tr>
+          <td><strong>自带文档</strong></td>
+          <td>自动生成 Swagger（/docs）与 ReDoc（/redoc）交互式 API 文档</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="11-与其他框架对比">1.1 与其他框架对比
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>对比项</th>
+          <th>FastAPI</th>
+          <th>Flask</th>
+          <th>Django</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>性能</td>
+          <td>高（异步原生）</td>
+          <td>中（同步 WSGI）</td>
+          <td>中</td>
+      </tr>
+      <tr>
+          <td>请求校验</td>
+          <td>类型提示自动校验</td>
+          <td>手动</td>
+          <td>手动</td>
+      </tr>
+      <tr>
+          <td>自动文档</td>
+          <td>✅ 内置 Swagger/ReDoc</td>
+          <td>❌ 需第三方</td>
+          <td>❌ 需第三方</td>
+      </tr>
+      <tr>
+          <td>异步支持</td>
+          <td>✅ 原生 async/await</td>
+          <td>需扩展</td>
+          <td>3.1+ 逐步支持</td>
+      </tr>
+      <tr>
+          <td>依赖注入</td>
+          <td>✅ 内置 Depends</td>
+          <td>❌</td>
+          <td>✅ 类似机制</td>
+      </tr>
+      <tr>
+          <td>适合场景</td>
+          <td>高并发 API、微服务</td>
+          <td>轻量服务、快速原型</td>
+          <td>大型全栈、后台管理</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="二分层架构总览">二、分层架构总览
+</h2><p>学习 FastAPI 最有效的方式，是把一个完整程序<strong>从上到下拆成若干层</strong>，理解每一层的职责。下面这份 <code>main.py</code> 就是一个麻雀虽小、五脏俱全的完整示例：</p>
+<blockquote>
+<p>💡 <strong>核心心法</strong>：FastAPI 的本质就是**「注册」**——你把&quot;处理函数&quot;注册给路由，把&quot;子路由&quot;注册给主应用，框架负责把请求分发到正确的函数。全文请带着这个理解去读。</p>
+</blockquote>
+<h3 id="完整代码示例-mainpy">完整代码示例 (<code>main.py</code>)
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># ---------- 1. 导入区：引入所有必需组件 ----------</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">BackgroundTasks</span><span class="p">,</span> <span class="n">Header</span><span class="p">,</span> <span class="n">APIRouter</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi.middleware.cors</span> <span class="kn">import</span> <span class="n">CORSMiddleware</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">uvicorn</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- 2. 配置层：管理环境变量与应用设置 ----------</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Settings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;Awesome API&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">admin_email</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;admin@example.com&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- 3. 数据模型层(Pydantic)：定义请求/响应结构 ----------</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TaskCreate</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&#34;任务标题&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&#34;优先级1-5&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TaskResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+</span></span><span class="line"><span class="cl">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+</span></span><span class="line"><span class="cl">    <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span>
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">from_attributes</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># 允许自动转换ORM/字典对象</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- 4. 依赖注入层：提供数据库和认证逻辑 ----------</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 模拟内存数据库</span>
+</span></span><span class="line"><span class="cl"><span class="n">fake_db</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="n">task_id_counter</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_db</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 真实项目里这里会 yield 一个 SQLAlchemy Session</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">fake_db</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_current_user</span><span class="p">(</span><span class="n">authorization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">authorization</span> <span class="o">!=</span> <span class="s2">&#34;Bearer secret-token&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&#34;无效的Token&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;username&#34;</span><span class="p">:</span> <span class="s2">&#34;test_user&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- 5. 路由层(APIRouter)：模块化处理业务逻辑 ----------</span>
+</span></span><span class="line"><span class="cl"><span class="n">task_router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&#34;/api/v1/tasks&#34;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;任务管理&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 后台任务函数（异步执行，不阻塞响应）</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">send_notification</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># 模拟发邮件耗时</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;已向 </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2"> 发送关于 &#39;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&#39; 的通知&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@task_router.post</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">TaskResponse</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">create_task</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">task_data</span><span class="p">:</span> <span class="n">TaskCreate</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">background_tasks</span><span class="p">:</span> <span class="n">BackgroundTasks</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">current_user</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_current_user</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">global</span> <span class="n">task_id_counter</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 1. 触发后台任务</span>
+</span></span><span class="line"><span class="cl">    <span class="n">background_tasks</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">send_notification</span><span class="p">,</span> <span class="n">current_user</span><span class="p">[</span><span class="s2">&#34;username&#34;</span><span class="p">],</span> <span class="n">task_data</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># 2. 存储数据</span>
+</span></span><span class="line"><span class="cl">    <span class="n">new_task</span> <span class="o">=</span> <span class="n">task_data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">new_task</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_id_counter</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="p">[</span><span class="n">task_id_counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_task</span>
+</span></span><span class="line"><span class="cl">    <span class="n">task_id_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">new_task</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@task_router.get</span><span class="p">(</span><span class="s2">&#34;/</span><span class="si">{task_id}</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">TaskResponse</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">task</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">&#34;任务 </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> 未找到&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">task</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@task_router.get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">List</span><span class="p">[</span><span class="n">TaskResponse</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">list_tasks</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- 6. 主应用实例 &amp; 中间件 ----------</span>
+</span></span><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">title</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">app_name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">description</span><span class="o">=</span><span class="s2">&#34;一个完整的FastAPI示例程序&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">version</span><span class="o">=</span><span class="s2">&#34;1.0.0&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 添加跨域中间件（生产环境需锁死域名）</span>
+</span></span><span class="line"><span class="cl"><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">CORSMiddleware</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">allow_origins</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;*&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="n">allow_credentials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">allow_methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;*&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="n">allow_headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;*&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- 7. 生命周期事件(启动/关闭钩子) ----------</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@app.on_event</span><span class="p">(</span><span class="s2">&#34;startup&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">startup_event</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;应用 </span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">app_name</span><span class="si">}</span><span class="s2"> 正在启动...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 这里通常初始化数据库连接池、Redis连接等</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@app.on_event</span><span class="p">(</span><span class="s2">&#34;shutdown&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown_event</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;应用正在优雅关闭...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 这里通常关闭连接池、保存缓存等</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- 8. 根路由 &amp; 注册子路由 ----------</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@app.get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">root</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;message&#34;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;欢迎来到 </span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">app_name</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 把前面定义的 task_router 挂载到 app 上</span>
+</span></span><span class="line"><span class="cl"><span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">task_router</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- 9. 本地调试入口 ----------</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&#34;main:app&#34;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&#34;0.0.0.0&#34;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="三逐层深度讲解">三、逐层深度讲解
+</h2><h3 id="31-导入区--一切的起点">3.1 导入区 —— 一切的起点
+</h3><p>把所需组件按&quot;用途分组&quot;导入，保持清晰即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">BackgroundTasks</span><span class="p">,</span> <span class="n">Header</span><span class="p">,</span> <span class="n">APIRouter</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>组件</th>
+          <th>作用</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>FastAPI</code></td>
+          <td>创建主应用实例（大总管）</td>
+      </tr>
+      <tr>
+          <td><code>APIRouter</code></td>
+          <td>创建子路由（模块化拆分）</td>
+      </tr>
+      <tr>
+          <td><code>Depends</code></td>
+          <td>依赖注入机制的核心</td>
+      </tr>
+      <tr>
+          <td><code>HTTPException</code></td>
+          <td>统一抛出 HTTP 错误</td>
+      </tr>
+      <tr>
+          <td><code>BackgroundTasks</code></td>
+          <td>后台任务（响应后执行）</td>
+      </tr>
+      <tr>
+          <td><code>Header</code></td>
+          <td>从请求头提取参数</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="32-配置层--集中管理可变设置">3.2 配置层 —— 集中管理可变设置
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Settings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;Awesome API&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">admin_email</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;admin@example.com&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>为什么要单独一层？</strong> 数据库连接串、密钥、域名这类&quot;会变的配置&quot;如果散落在代码各处，改一处就要翻遍全项目。集中成 <code>Settings</code> 后：</p>
+<ul>
+<li>实例化一次，全局复用（<code>settings.app_name</code>）</li>
+<li>生产环境配合 <code>pydantic-settings</code> 从 <code>.env</code> 读取，避免密钥硬编码：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># pip install pydantic-settings</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pydantic_settings</span> <span class="kn">import</span> <span class="n">BaseSettings</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Settings</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;Awesome API&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">database_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;sqlite:///./test.db&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">env_file</span> <span class="o">=</span> <span class="s2">&#34;.env&#34;</span>   <span class="c1"># 从 .env 文件自动读取</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="33-数据模型层pydantic-请求响应结构的合同">3.3 数据模型层（Pydantic）—— 请求/响应结构的&quot;合同&quot;
+</h3><p><strong>你问过的 <code>Item</code> 类就是这一层。</strong> 它定义了两份&quot;合同&quot;：</p>
+<ul>
+<li><code>TaskCreate</code>：<strong>请求</strong>长什么样 —— 客户端必须按此格式提交</li>
+<li><code>TaskResponse</code>：<strong>响应</strong>长什么样 —— 服务端保证按此格式返回</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TaskCreate</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&#34;任务标题&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&#34;优先级1-5&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>Field(...)</code> 的 <code>. . .</code> 表示<strong>必填</strong>；<code>ge=1, le=5</code> 表示范围限制 1~5。Pydantic 会自动完成：</p>
+<ol>
+<li><strong>类型转换</strong>：字符串 <code>&quot;3&quot;</code> 自动转成 int <code>3</code></li>
+<li><strong>校验</strong>：title 为空、priority 超出范围 → 自动返回 422 错误</li>
+<li><strong>序列化</strong>：<code>model_dump()</code> 转成字典，<code>model_validate()</code> 从字典/ORM 转回模型</li>
+</ol>
+<blockquote>
+<p>⚠️ 注意：Pydantic v2 中 <code>Config</code> 嵌套类写法改为 <code>model_config = ConfigDict(from_attributes=True)</code>，<code>dict()</code> 改为 <code>model_dump()</code>。老教程的 <code>orm_mode = True</code> 已弃用。</p>
+</blockquote>
+<h3 id="34-依赖注入层--把重复逻辑封装成零件">3.4 依赖注入层 —— 把重复逻辑封装成&quot;零件&quot;
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_current_user</span><span class="p">(</span><span class="n">authorization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">authorization</span> <span class="o">!=</span> <span class="s2">&#34;Bearer secret-token&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&#34;无效的Token&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;username&#34;</span><span class="p">:</span> <span class="s2">&#34;test_user&#34;</span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>核心思想</strong>：把&quot;提取 Token → 校验 → 返回用户&quot;这段逻辑封装成零件。路由函数只需声明：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">current_user</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_current_user</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>框架自动完成三件事：<strong>执行依赖 → 拿到返回值 → 注入到参数</strong>。</p>
+<p><strong>依赖注入解决了什么问题？</strong></p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>问题</th>
+          <th>不用 DI 的写法</th>
+          <th>用 DI 的写法</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>每个接口都要校验 Token</td>
+          <td>每个函数重复复制校验代码</td>
+          <td>声明 <code>Depends(get_current_user)</code></td>
+      </tr>
+      <tr>
+          <td>数据库连接谁负责开关</td>
+          <td>每个函数手动管理</td>
+          <td><code>yield</code> 依赖自动开关</td>
+      </tr>
+      <tr>
+          <td>测试时换假数据</td>
+          <td>改业务代码</td>
+          <td>覆盖依赖即可</td>
+      </tr>
+  </tbody>
+</table></div>
+<p><strong>进阶：<code>yield</code> 依赖</strong>（资源释放型，数据库场景必备）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_db</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span> <span class="o">=</span> <span class="n">DatabaseSession</span><span class="p">()</span>      <span class="c1"># 创建连接</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">yield</span> <span class="n">db</span>                <span class="c1"># 函数执行期间持有</span>
+</span></span><span class="line"><span class="cl">    <span class="k">finally</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>              <span class="c1"># 请求结束自动关闭</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="35-路由层--注册处理函数的核心">3.5 路由层 —— &ldquo;注册处理函数&quot;的核心
+</h3><p><strong>这就是你提到的&quot;注册处理函数&quot;机制的实现</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@task_router.post</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">TaskResponse</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">create_task</span><span class="p">(</span><span class="n">task_data</span><span class="p">:</span> <span class="n">TaskCreate</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>装饰器 <code>@task_router.post(&quot;/&quot;)</code> 的本质：<strong>把一个函数注册进路由表</strong>，告诉框架&quot;当收到 <code>POST /api/v1/tasks/</code> 请求时，调用这个函数&rdquo;。</p>
+<p>值得注意的几个设计细节：</p>
+<ul>
+<li><strong>为什么用 <code>APIRouter</code> 而不是 <code>@app</code>？</strong> 模块化。任务管理、用户管理、订单管理各建一个 <code>router</code>，互相独立、互不干扰，最后统一挂载。</li>
+<li><strong><code>response_model=TaskResponse</code></strong>：声明响应走 Pydantic 序列化，文档自动生成，并保证返回结构一致（比如防泄露多余字段）。</li>
+<li><strong><code>status_code=201</code></strong>：创建成功应返回 201 Created。</li>
+<li><strong><code>task_id: int</code> 路径参数</strong>：声明 int 后，访问 <code>/api/v1/tasks/abc</code> 会自动返回 422（类型错误），无需手动解析。</li>
+<li><strong><code>BackgroundTasks</code></strong>：<code>send_notification</code> 会在<strong>响应返回之后</strong>由 Starlette 在后台执行，用户请求瞬间完成，2 秒的模拟邮件耗时不会阻塞响应。</li>
+</ul>
+<h3 id="36-主应用--中间件--整个程序的大总管">3.6 主应用 &amp; 中间件 —— 整个程序的大总管
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">title</span><span class="o">=...</span><span class="p">,</span> <span class="n">description</span><span class="o">=...</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&#34;1.0.0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span><span class="n">CORSMiddleware</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>app</code> 是唯一的全局实例，它同时扮演多个角色：<strong>路由表容器、中间件堆栈入口、生命周期管理器</strong>。</p>
+<p><strong>中间件执行时机</strong>（请求进出顺序）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">客户端请求 → 中间件(预处理) → 路由分发 → 业务函数 → 响应 → 中间件(后处理) → 客户端
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>CORS 中间件</strong>解决的是浏览器跨域问题：前端 <code>localhost:3000</code> 调后端 <code>localhost:8000</code> 时，浏览器会先发 OPTIONS 预检请求，CORS 中间件负责放行并返回允许的头部。</p>
+<blockquote>
+<p>⚠️ 生产环境务必把 <code>allow_origins=[&quot;*&quot;]</code> 换成具体域名列表，并谨慎开启 <code>allow_credentials=True</code>（与通配符 <code>*</code> 不能同时使用）。</p>
+</blockquote>
+<p><strong>自定义中间件示例</strong>（记录每个请求耗时）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@app.middleware</span><span class="p">(</span><span class="s2">&#34;http&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">log_requests</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">call_next</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call_next</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> 耗时 </span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">response</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="37-生命周期事件--启动关闭钩子">3.7 生命周期事件 —— 启动/关闭钩子
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@app.on_event</span><span class="p">(</span><span class="s2">&#34;startup&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">startup_event</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;应用 </span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">app_name</span><span class="si">}</span><span class="s2"> 正在启动...&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>用途：初始化数据库连接池、加载机器学习模型、预热缓存等<strong>一次性操作</strong>。</p>
+<blockquote>
+<p>⚠️ 新版推荐用 <code>lifespan</code> 替代 <code>on_event</code>（后者被标记为弃用）：</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">asynccontextmanager</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@asynccontextmanager</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;启动中...初始化连接池&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">yield</span>                      <span class="c1"># 应用运行期间</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;关闭中...释放资源&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="38-分层关系总结表">3.8 分层关系总结表
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th style="text-align: left">层级</th>
+          <th style="text-align: left">代码位置</th>
+          <th style="text-align: left">作用与讲解</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>1. 导入区</strong></td>
+          <td style="text-align: left">顶部 <code>import</code></td>
+          <td style="text-align: left">基础。把所有需要的工具包拉进来。</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>2. 配置层</strong></td>
+          <td style="text-align: left"><code>class Settings</code></td>
+          <td style="text-align: left">集中管理可变配置（如数据库连接串、域名）。生产环境通常从 <code>.env</code> 文件读取，避免硬编码。</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>3. 数据模型层</strong></td>
+          <td style="text-align: left"><code>TaskCreate</code>, <code>TaskResponse</code></td>
+          <td style="text-align: left"><strong><code>Item</code>类就是这里。</strong> 定义&quot;请求长什么样&quot;和&quot;响应长什么样&quot;，负责自动校验与序列化。</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>4. 依赖注入层</strong></td>
+          <td style="text-align: left"><code>get_db</code>, <code>get_current_user</code></td>
+          <td style="text-align: left"><strong>把重复逻辑封装成&quot;零件&quot;。</strong> 路由函数只需 <code>Depends(...)</code> 即可直接拿到用户信息，完全解耦。</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>5. 路由层（业务逻辑）</strong></td>
+          <td style="text-align: left"><code>@task_router.post</code> 等</td>
+          <td style="text-align: left"><strong>&ldquo;注册处理函数&quot;核心。</strong> <code>APIRouter</code> 把&quot;任务管理&quot;这组接口单独拆分，最后统一挂载。</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>6. 主应用实例 &amp; 中间件</strong></td>
+          <td style="text-align: left"><code>app = FastAPI(...)</code></td>
+          <td style="text-align: left"><strong>大总管。</strong> 中间件在请求到达路由<strong>之前</strong>、响应返回客户端<strong>之前</strong>统一处理。</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>7. 生命周期事件</strong></td>
+          <td style="text-align: left"><code>@app.on_event(&quot;startup&quot;)</code></td>
+          <td style="text-align: left"><strong>服务启动/关闭时的&quot;钩子&rdquo;。</strong> 初始化连接池、加载模型等一次性操作。</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>8. 根路由 &amp; 注册</strong></td>
+          <td style="text-align: left"><code>app.include_router</code></td>
+          <td style="text-align: left">把拆分出的子路由挂载回主应用。<strong>&ldquo;注册&quot;概念的最终合并动作。</strong></td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="39-一次请求的完整旅程">3.9 一次请求的完整旅程
+</h3><pre class="mermaid">
+  sequenceDiagram
+    participant Client
+    participant Middleware as 中间件(CORS等)
+    participant Route as 路由分发
+    participant Dep as 依赖注入
+    participant Handler as 路由处理函数
+    participant Background as 后台任务
+
+    Client-&gt;&gt;Middleware: 发起请求
+    Middleware-&gt;&gt;Route: 预处理后转交
+    Route-&gt;&gt;Dep: 匹配到处理函数
+    Dep-&gt;&gt;Dep: 校验Token/准备DB
+    Dep-&gt;&gt;Handler: 注入依赖+参数
+    Handler-&gt;&gt;Handler: 业务逻辑
+    Handler--&gt;&gt;Client: 返回响应(序列化)
+    Handler--&gt;&gt;Background: 响应后执行通知
+</pre>
+
+<hr>
+<h2 id="四运行与测试">四、运行与测试
+</h2><h3 id="41-启动服务">4.1 启动服务
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pip install fastapi uvicorn pydantic
+</span></span><span class="line"><span class="cl">python main.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>看到如下输出即启动成功：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">INFO:     Uvicorn running on http://0.0.0.0:8000
+</span></span><span class="line"><span class="cl">INFO:     Application startup complete.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="42-访问自动生成的文档">4.2 访问自动生成的文档
+</h3><p>打开浏览器访问 <code>http://127.0.0.1:8000/docs</code>，会看到 Swagger 交互界面：</p>
+<ul>
+<li>观察 <code>/api/v1/tasks</code> 接口：<strong>请求体要求必须包含 <code>title</code>，且 <code>priority</code> 限制在 1~5 之间</strong> —— 这就是 <code>TaskCreate</code> 类在生效（Schema 是自动从模型生成的）</li>
+<li>点击右上角 <code>Authorize</code> 按钮，输入 <code>Bearer secret-token</code> 模拟认证（对应 <code>get_current_user</code> 依赖）</li>
+<li>另一个地址 <code>http://127.0.0.1:8000/redoc</code> 提供 ReDoc 风格文档</li>
+</ul>
+<h3 id="43-curl-测试">4.3 curl 测试
+</h3><p><strong>创建任务（带 Token）</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -X POST http://127.0.0.1:8000/api/v1/tasks/ <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-H <span class="s2">&#34;Authorization: Bearer secret-token&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-H <span class="s2">&#34;Content-Type: application/json&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-d <span class="s1">&#39;{&#34;title&#34;: &#34;学习FastAPI&#34;, &#34;priority&#34;: 3}&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>返回结果包含自动生成的 <code>id</code>，同时终端会打印后台任务的通知（<code>BackgroundTasks</code> 生效）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;id&#34;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&#34;title&#34;</span><span class="p">:</span><span class="s2">&#34;学习FastAPI&#34;</span><span class="p">,</span><span class="nt">&#34;priority&#34;</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>未带 Token（应返回 401）</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -X POST http://127.0.0.1:8000/api/v1/tasks/ <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-H <span class="s2">&#34;Content-Type: application/json&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-d <span class="s1">&#39;{&#34;title&#34;: &#34;无权限&#34;}&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>查询/列表</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl http://127.0.0.1:8000/api/v1/tasks/1
+</span></span><span class="line"><span class="cl">curl http://127.0.0.1:8000/api/v1/tasks/
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>验证校验生效（应返回 422）</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -X POST http://127.0.0.1:8000/api/v1/tasks/ <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-H <span class="s2">&#34;Authorization: Bearer secret-token&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-H <span class="s2">&#34;Content-Type: application/json&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-d <span class="s1">&#39;{&#34;priority&#34;: 99}&#39;</span>          <span class="c1"># 缺少title + priority超范围</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="五进阶机制解析">五、进阶机制解析
+</h2><h3 id="51-查询参数与路径参数">5.1 查询参数与路径参数
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@task_router.get</span><span class="p">(</span><span class="s2">&#34;/search&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">search_tasks</span><span class="p">(</span><span class="n">keyword</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># GET /api/v1/tasks/search?keyword=xxx&amp;page=1&amp;size=10</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;keyword&#34;</span><span class="p">:</span> <span class="n">keyword</span><span class="p">,</span> <span class="s2">&#34;page&#34;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span> <span class="s2">&#34;size&#34;</span><span class="p">:</span> <span class="n">size</span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>参数类型</th>
+          <th>写法</th>
+          <th>示例</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>路径参数</td>
+          <td><code>{task_id}</code> + 函数参数 <code>task_id: int</code></td>
+          <td><code>/api/v1/tasks/5</code></td>
+      </tr>
+      <tr>
+          <td>查询参数</td>
+          <td>函数参数不带路径声明</td>
+          <td><code>?page=1&amp;size=10</code></td>
+      </tr>
+      <tr>
+          <td>请求体</td>
+          <td>Pydantic 模型参数</td>
+          <td>JSON body</td>
+      </tr>
+      <tr>
+          <td>Header</td>
+          <td><code>Header(None)</code></td>
+          <td><code>Authorization</code></td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="52-错误处理">5.2 错误处理
+</h3><p><strong>主动抛错</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">&#34;任务 </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> 未找到&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>全局异常处理器</strong>（统一错误格式）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@app.exception_handler</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">http_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">status_code</span><span class="o">=</span><span class="n">exc</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&#34;code&#34;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="s2">&#34;msg&#34;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span> <span class="s2">&#34;success&#34;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="53-后台任务与异步">5.3 后台任务与异步
+</h3><p><code>BackgroundTasks</code> 适合<strong>轻量级</strong>任务（发邮件、写日志）。重任务（视频转码、爬虫）应交给 Celery 等消息队列，因为后台任务仍然共享工作进程，大量耗时任务会拖垮性能。</p>
+<p>另外注意：<strong>普通函数与 async 函数混用是安全的</strong>——FastAPI 会把同步函数放进线程池执行，不会阻塞事件循环。</p>
+<h3 id="54-认证方式对比">5.4 认证方式对比
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>方式</th>
+          <th>适合场景</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Header 手动校验</td>
+          <td>学习、内部工具</td>
+          <td>本文示例，最简单</td>
+      </tr>
+      <tr>
+          <td>OAuth2 Password Flow</td>
+          <td>自建系统登录</td>
+          <td><code>OAuth2PasswordBearer</code> + JWT，带完整登录文档</td>
+      </tr>
+      <tr>
+          <td>API Key</td>
+          <td>第三方开发者</td>
+          <td>Header/Query 传 key</td>
+      </tr>
+      <tr>
+          <td>JWT 无状态认证</td>
+          <td>前后端分离</td>
+          <td>token 内含用户信息，服务端不存 session</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="六常见坑与避坑指南">六、常见坑与避坑指南
+</h2><ol>
+<li><strong><code>Config</code> 写法过时</strong>：Pydantic v2 用 <code>model_config = ConfigDict(...)</code>；<code>orm_mode</code> → <code>from_attributes</code></li>
+<li><strong>CORS 全放开</strong>：<code>allow_origins=[&quot;*&quot;]</code> + <code>allow_credentials=True</code> 组合浏览器会报错，且生产有安全风险</li>
+<li><strong><code>on_event</code> 已弃用</strong>：新项目直接用 <code>lifespan</code> 上下文管理器</li>
+<li><strong>同步阻塞函数</strong>：耗时操作（如 <code>time.sleep</code>）在 async 函数里会<strong>阻塞整个事件循环</strong>，要么用同步函数（自动进线程池），要么用 <code>asyncio</code> 异步版本</li>
+<li><strong>全局变量计数</strong>：生产环境 <code>task_id_counter</code> 这种内存状态多进程下会错乱（Uvicorn 多 worker 时），请用数据库自增 ID</li>
+<li><strong><code>Optional[str] = None</code> 默认值</strong>：Pydantic v2 中可省略 <code>Optional</code>，直接 <code>str | None = None</code>（Python 3.10+）</li>
+</ol>
+<hr>
+<h2 id="七一个值得注意的细节">七、一个值得注意的细节
+</h2><p>你可能注意到了，这里的路由用的是 <code>@task_router</code> 而不是 <code>@app</code>。这在大型项目中是<strong>强推写法</strong>：</p>
+<ul>
+<li>如果有&quot;用户模块&rdquo;、&ldquo;订单模块&rdquo;，每个模块各自有独立的 <code>APIRouter</code>，最后统一挂载到 <code>app</code></li>
+<li><strong>它完全符合你的理解</strong>：本质上还是在&quot;注册处理函数&quot;，只是从直接注册到 <code>app</code>，变成了先注册到 <code>router</code>，再由 <code>app</code> 把整个 <code>router</code> 批量合并。这是你后续构建大型项目的必经之路</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 典型的多模块项目结构</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># app/</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ├── main.py          # app 实例 + include_router</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ├── routers/</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># │   ├── tasks.py     # task_router</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># │   ├── users.py     # user_router</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># │   └── orders.py    # order_router</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ├── models/          # Pydantic 数据模型</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ├── deps/            # 公共依赖（认证、DB）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># └── config.py        # Settings 配置</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/fastapi/">FastAPI</a>
+        
+            <a href="/tags/python/">Python</a>
+        
+            <a href="/tags/pydantic/">Pydantic</a>
+        
+            <a href="/tags/%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/">依赖注入</a>
+        
+            <a href="/tags/web%E6%A1%86%E6%9E%B6/">Web框架</a>
+        
+            <a href="/tags/api/">API</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>根据CC BY-NC-SA 4.0许可授权</span>
+    </section>
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const elementsToRender = [".main-article", ".widget--toc"];
+
+        elementsToRender.forEach(selector => {
+            const element = document.querySelector(selector);
+            if (element) {
+                renderMathInElement(element, {
+                    delimiters: [
+                        { left: "$$", right: "$$", display: true },
+                        { left: "$", right: "$", display: false },
+                        { left: "\\(", right: "\\)", display: false },
+                        { left: "\\[", right: "\\]", display: true }
+                    ],
+                    ignoredClasses: ["gist"]
+                });
+            }
+        });
+    });
+</script>
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="Yannick-Mo/Yannick-Mo.github.io"
+    data-repo-id="R_kgDOQuw_0w"
+    data-category="Q&amp;A"
+    data-category-id="DIC_kwDOQuw_084C0QIk"
+    data-mapping="pathname"
+    data-strict="false"
+    data-reactions-enabled="true"
+    data-emit-metadata="true"
+    data-input-position="top"
+    data-theme="light"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('light');
+            } else {
+                setGiscusTheme('dark_dimmed');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 雅尼克.莫(Yannick.Mo)
+    </section>
+    
+    <section class="powerby">
+        
+            少年，你不是可以逆风翻盘吗？
+        
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.c432297ce8e65b7951da08373ceabec6f7cc83933801a7002336738bb8bdeabf.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" data-turbo-eval="false"></script>
+<script data-turbo-eval="false">
+(function () {
+  function getMermaidTheme() {
+    const scheme = document.documentElement.getAttribute('data-scheme');
+    return scheme === 'dark' ? 'dark' : 'default';
+  }
+
+  function runMermaid() {
+    if (!window.mermaid) return;
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: getMermaidTheme(),
+      themeVariables: { fontFamily: "JetBrains Mono" }
+    });
+    mermaid.run({ querySelector: ".mermaid" });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", runMermaid);
+  } else {
+    runMermaid();
+  }
+  document.addEventListener("turbo:load", runMermaid);
+
+  new MutationObserver(function () { runMermaid(); })
+    .observe(document.documentElement, { attributes: true, attributeFilter: ['data-scheme'] });
+})();
+</script>
+
+
+
+
+<style>
+     
+    body {
+        background: url(https://Yannick-Mo.github.io/background/bg.png) no-repeat center top;
+        background-size: cover;
+        background-attachment: fixed;
+        background-color: #ffffff;
+        position: relative;
+    }
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.50);
+        z-index: -1;
+    }
+    [data-scheme="dark"] body {
+        background-color: #1a1a1a;
+    }
+    [data-scheme="dark"] body::before {
+        background-color: rgba(26, 26, 26, 0.8);
+    }
+
+     
+    .left-sidebar {
+        padding-bottom: calc(var(--main-top-padding) + 100px) !important;
+    }
+
+     
+    .site-avatar .site-logo {
+        transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+    .site-avatar:hover .site-logo {
+        transform: rotate(360deg);
+    }
+
+     
+    #TableOfContents > ul ul,
+    #TableOfContents > ul ol,
+    #TableOfContents > ol ul,
+    #TableOfContents > ol ol {
+        display: none;
+    }
+    #TableOfContents > ul .open,
+    #TableOfContents > ol .open {
+        display: block;
+    }
+
+     
+    #backTopBtn {
+        display: none;
+        position: fixed;
+        bottom: 30px;
+        right: 20px;
+        z-index: 99;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        background-image: url(https://Yannick-Mo.github.io/icons/backTop.svg);
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.8;
+        transition: opacity 0.2s ease;
+	border: none;
+        background-color: transparent;
+    }
+    #backTopBtn:hover {
+        opacity: 1;
+    }
+
+     
+    .highlight {
+        max-height: 400px;
+        overflow: hidden;
+        position: relative;
+        transition: max-height 0.3s ease-in-out;
+    }
+    .code-show {
+        max-height: 9999px !important;
+    }
+    .code-more-box {
+        width: 100%;
+        padding-top: 78px;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+    [data-scheme="dark"] .code-more-box {
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(#1a1a1a));
+    }
+    .code-more-btn {
+        pointer-events: auto;
+        display: block;
+        margin: auto;
+        width: 44px;
+        height: 22px;
+        background: #f0f0f5;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+        padding-top: 6px;
+        cursor: pointer;
+        opacity: 0.8;
+        transition: opacity 0.2s ease;
+    }
+    .code-more-btn:hover {
+        opacity: 1;
+    }
+    [data-scheme="dark"] .code-more-btn {
+        background: #333;
+    }
+    .code-more-img {
+        cursor: pointer !important;
+        display: block;
+        margin: auto;
+        width: 22px;
+        height: 16px;
+        transition: transform 0.2s ease;
+    }
+    .code-more-img-fold {
+        transform: rotate(180deg);
+    }
+</style>
+
+<script data-turbo-eval="false">
+    const codeMoreIconUrl = "https://Yannick-Mo.github.io/icons/codeMore.svg";
+    const backTopIconUrl = "https://Yannick-Mo.github.io/icons/backTop.svg";
+
+    
+    (function() {
+        window.addEventListener('scroll', function() {
+            document.querySelectorAll(".open").forEach(el => el.classList.remove("open"));
+            let li = document.querySelector(".active-class");
+            if (!li) return;
+            if (li.children.length > 1) li.children[1].classList.add("open");
+            let ul = li.parentElement;
+            do {
+                ul.classList.add("open");
+                ul = ul.parentElement?.parentElement;
+            } while (ul && (ul.localName === 'ul' || ul.localName === 'ol'));
+        });
+
+        window.addEventListener('scroll', function() {
+            let btn = document.getElementById("backTopBtn");
+            if (!btn) return;
+            btn.style.display = (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) ? "block" : "none";
+        });
+    })();
+
+    
+    function initScrollTop() {
+        if (document.getElementById("backTopBtn")) return;
+        let sidebar = document.querySelector(".right-sidebar");
+        if (!sidebar) return;
+        let btn = document.createElement("div");
+        btn.id = "backTopBtn";
+        btn.onclick = function() { window.scrollTo({ top: 0, behavior: "smooth" }); };
+        btn.style.backgroundImage = "url(" + backTopIconUrl + ")";
+        sidebar.appendChild(btn);
+    }
+
+    
+    function initCodeMoreBox() {
+        document.querySelectorAll(".highlight").forEach(codeBlock => {
+            if (codeBlock.querySelector(".code-more-box")) return;
+            if (codeBlock.scrollHeight <= codeBlock.clientHeight) return;
+            let box = document.createElement('div');
+            box.classList.add('code-more-box');
+            let btn = document.createElement('span');
+            btn.classList.add('code-more-btn');
+            let img = document.createElement('img');
+            img.classList.add('code-more-img');
+            img.src = codeMoreIconUrl;
+            btn.addEventListener('click', function() {
+                codeBlock.classList.toggle('code-show');
+                img.classList.toggle('code-more-img-fold', codeBlock.classList.contains('code-show'));
+                window.dispatchEvent(new Event('resize'));
+            });
+            btn.appendChild(img);
+            box.appendChild(btn);
+            codeBlock.appendChild(box);
+        });
+    }
+
+    
+    let sakuraIsLoaded = false;
+    function initSakura() {
+        if (sakuraIsLoaded) return;
+        const sakuraScript = document.createElement('script');
+        sakuraScript.src = "https://Yannick-Mo.github.io/background/sakura.js";
+        sakuraScript.onload = function() { sakuraIsLoaded = true; };
+        document.body.appendChild(sakuraScript);
+    }
+
+    
+    function initPage() {
+        initScrollTop();
+        initCodeMoreBox();
+        initSakura();
+    }
+    document.addEventListener('DOMContentLoaded', initPage);
+    document.addEventListener('turbo:load', initPage);
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
+<div id="global-player" data-turbo-permanent></div>
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js" data-turbo-eval="false"></script>
+<script data-turbo-eval="false">
+(function() {
+    if (window.globalPlayer) return;
+    var songs = [
+        {
+            name: "起风了",
+            artist: "买辣椒也用券",
+            url: "\/audio\/qifengle.mp3",
+            cover: "\/img\/qifengle.png"
+        },
+        {
+            name: "凉城",
+            artist: "任然",
+            url: "\/audio\/liangcheng.mp3",
+            cover: "\/img\/liangcheng.png"
+        },
+        {
+            name: "不如就等风来",
+            artist: "林宝馨",
+            url: "\/audio\/burujiudengfenglai.mp3",
+            cover: "\/img\/burujiudengfenglai.png"
+        },
+        {
+            name: "Catch My Breath",
+            artist: "Kelly Clarkson",
+            url: "\/audio\/catch-my-breath.mp3",
+            cover: "\/img\/catch-my-breath.png"
+        },
+        {
+            name: "离开我的依赖",
+            artist: "王艳薇",
+            url: "\/audio\/li-kai-wo-de-yi-lai.mp3",
+            cover: "\/img\/li-kai-wo-de-yi-lai.png"
+        },
+        {
+            name: "Shots",
+            artist: "Imagine Dragons",
+            url: "\/audio\/shots.mp3",
+            cover: "\/img\/shots.png"
+        },
+        {
+            name: "失控",
+            artist: "井迪儿",
+            url: "\/audio\/shi-kong.mp3",
+            cover: "\/img\/shi-kong.png"
+        },
+        {
+            name: "晚风",
+            artist: "Lker林柯",
+            url: "\/audio\/wan-feng.mp3",
+            cover: "\/img\/wan-feng.png"
+        },
+        {
+            name: "海阔天空",
+            artist: "Beyond",
+            url: "\/audio\/hai-kuo-tian-kong.mp3",
+            cover: "\/img\/hai-kuo-tian-kong.png"
+        },
+        {
+            name: "爱错",
+            artist: "王力宏",
+            url: "\/audio\/ai-cuo.mp3",
+            cover: "\/img\/ai-cuo.png"
+        },
+        {
+            name: "夜空中最亮的星",
+            artist: "逃跑计划",
+            url: "\/audio\/ye-kong-zui-liang-de-xing.mp3",
+            cover: "\/img\/ye-kong-zui-liang-de-xing.png"
+        },
+        {
+            name: "晴天",
+            artist: "周杰伦",
+            url: "\/audio\/qing-tian.mp3",
+            cover: "\/img\/qing-tian.png"
+        },
+        {
+            name: "稻香",
+            artist: "周杰伦",
+            url: "\/audio\/dao-xiang.mp3",
+            cover: "\/img\/dao-xiang.png"
+        },
+        {
+            name: "花海",
+            artist: "周杰伦",
+            url: "\/audio\/hua-hai.mp3",
+            cover: "\/img\/hua-hai.png"
+        },
+        {
+            name: "七里香",
+            artist: "周杰伦",
+            url: "\/audio\/qi-li-xiang.mp3",
+            cover: "\/img\/qi-li-xiang.png"
+        },
+        {
+            name: "红色高跟鞋",
+            artist: "蔡健雅",
+            url: "\/audio\/hong-se-gao-gen-xie.mp3",
+            cover: "\/img\/hong-se-gao-gen-xie.png"
+        },
+    ];
+    if (songs.length > 0) {
+        window.globalPlayer = new APlayer({
+            container: document.getElementById('global-player'),
+            fixed: true,
+            mini: true,
+            autoplay: false,
+            loop: 'all',
+            order: 'list',
+            preload: 'auto',
+            volume: 0.3,
+            audio: songs
+        });
+    }
+})();
+</script><script data-turbo-eval="false">
+(function() {
+    var config = {
+        waifuPath: '/waifu-tips.json',
+        cubism2Path: 'https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/live2d.min.js',
+        tools: ['hitokoto', 'asteroids', 'switch-model', 'switch-texture', 'photo', 'info', 'quit'],
+        showToggleAfterQuit: true,
+        logLevel: 'warn',
+        drag: false,
+    };
+
+    function initWaifu() {
+        if (document.getElementById('waifu')) return;
+        if (window.initWidget) {
+            window.initWidget(config);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', initWaifu);
+    document.addEventListener('turbo:load', initWaifu);
+})();
+</script>
+<style>
+#waifu { left: auto !important; right: 65px !important; }
+#waifu-toggle { left: auto !important; right: 0 !important; justify-content: flex-start !important; margin-left: 0 !important; margin-right: -100px !important; transition: margin-right 1s !important; }
+#waifu-toggle.waifu-toggle-active { display: flex !important; margin-right: -50px !important; }
+#waifu-toggle.waifu-toggle-active:hover { margin-right: -30px !important; }
+#waifu-tips { left: auto !important; right: calc(100% + (10px + 300px * (var(--ws, 1) - 1))) !important; margin: calc(-30px + 400px * (1 - var(--ws, 1))) 0 !important; }
+</style>
+<script data-turbo-eval="false">
+(function() {
+    var KEY = 'waifu-scale';
+    function apply(s) {
+        var m = document.getElementById('live2d');
+        if (m) m.style.transform = 'scale(' + s + ')';
+        var t = document.getElementById('waifu-tips');
+        if (t) t.style.setProperty('--ws', s);
+    }
+    function init() {
+        var tool = document.getElementById('waifu-tool');
+        if (!tool || document.getElementById('waifu-tool-zoomin')) return;
+        var saved = parseFloat(localStorage.getItem(KEY)) || 1;
+        apply(saved);
+        function mk(id, text, title, delta) {
+            var btn = document.createElement('span');
+            btn.id = id;
+            btn.textContent = text;
+            btn.title = title;
+            btn.style.cssText = 'cursor:pointer;color:#7b8c9d;font-size:20px;font-weight:bold;line-height:25px;text-align:center;transition:color .3s;user-select:none;';
+            btn.addEventListener('mouseenter', function() { this.style.color = '#0684bd'; });
+            btn.addEventListener('mouseleave', function() { this.style.color = '#7b8c9d'; });
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var cur = parseFloat(localStorage.getItem(KEY)) || 1;
+                var nxt = Math.round(Math.min(Math.max(cur + delta, 0.3), 3) * 10) / 10;
+                localStorage.setItem(KEY, nxt);
+                apply(nxt);
+            });
+            return btn;
+        }
+        tool.insertBefore(mk('waifu-tool-zoomout', '−', '缩小', -0.1), tool.firstChild);
+        tool.insertBefore(mk('waifu-tool-zoomin', '+', '放大', 0.1), tool.firstChild);
+    }
+    var obs = new MutationObserver(function() { init(); });
+    obs.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener('turbo:load', function() { setTimeout(init, 300); });
+    setTimeout(init, 800);
+})();
+</script><script src="/waifu-games/menu.js" data-turbo-eval="false"></script><div id="ambient-widget" data-turbo-permanent>
+    <button id="ambient-toggle" title="氛围音">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+    </button>
+    <div id="ambient-panel" class="hidden">
+        <button data-sound="rain">🌧️ 雨声</button>
+        <button data-sound="coffee" class="active">☕ 咖啡店</button>
+        <button data-sound="fire">🔥 壁炉</button>
+    </div>
+</div>
+<style>
+#ambient-widget {
+    position: fixed;
+    bottom: 90px;
+    left: 20px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+#ambient-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: var(--card-background);
+    color: var(--card-text-color-main);
+    box-shadow: var(--shadow-l2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+#ambient-toggle:hover { transform: scale(1.1); }
+#ambient-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    border-radius: 12px;
+    background: var(--card-background);
+    box-shadow: var(--shadow-l2);
+    transition: all 0.2s;
+}
+#ambient-panel.hidden { display: none; }
+#ambient-panel button {
+    border: none;
+    background: transparent;
+    color: var(--card-text-color-main);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    text-align: left;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+#ambient-panel button:hover { background: var(--card-separator-color); }
+#ambient-panel button.active {
+    background: var(--accent-color);
+    color: #fff;
+}
+[data-scheme="dark"] #ambient-toggle,
+[data-scheme="dark"] #ambient-panel {
+    background: #2d2d2d;
+}
+</style>
+<script data-turbo-eval="false">
+(function() {
+    if (window._ambientInited) return;
+    window._ambientInited = true;
+
+    var ctx, sources = {}, gains = {}, currentSound = 'coffee', isPlaying = false;
+
+    function createNoiseBuffer() {
+        var buf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        return buf;
+    }
+
+    function startRain() {
+        var buf = createNoiseBuffer();
+        var src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.loop = true;
+        var filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 1200;
+        var gain = ctx.createGain();
+        gain.gain.value = 0.25;
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        src.start();
+        sources.rain = src; gains.rain = gain;
+    }
+
+    function startCoffee() {
+        var buf = createNoiseBuffer();
+        var src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.loop = true;
+        var filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 200;
+        filter.Q.value = 0.5;
+        var gain = ctx.createGain();
+        gain.gain.value = 0.15;
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        src.start();
+        sources.coffee = src; gains.coffee = gain;
+    }
+
+    function startFire() {
+        var buf = createNoiseBuffer();
+        var src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.loop = true;
+        var lp = ctx.createBiquadFilter();
+        lp.type = 'lowpass';
+        lp.frequency.value = 400;
+        var hp = ctx.createBiquadFilter();
+        hp.type = 'highpass';
+        hp.frequency.value = 60;
+        var gain = ctx.createGain();
+        gain.gain.value = 0.2;
+        src.connect(lp);
+        lp.connect(hp);
+        hp.connect(gain);
+        gain.connect(ctx.destination);
+        src.start();
+        sources.fire = src; gains.fire = gain;
+
+        var crackle = setInterval(function() {
+            if (gains.fire) {
+                gains.fire.gain.value = 0.3 + Math.random() * 0.15;
+                setTimeout(function() { if (gains.fire) gains.fire.gain.value = 0.2; }, 80);
+            }
+        }, 300);
+        sources._crackle = crackle;
+    }
+
+    var starters = { rain: startRain, coffee: startCoffee, fire: startFire };
+
+    function stopAll() {
+        Object.keys(sources).forEach(function(k) {
+            if (k === '_crackle') { clearInterval(sources[k]); return; }
+            try { sources[k].stop(); } catch(e) {}
+        });
+        sources = {};
+        gains = {};
+        if (window.globalPlayer) { try { window.globalPlayer.pause(); } catch(e) {} }
+    }
+
+    function play(name) {
+        if (!ctx) {
+            ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (ctx.state === 'suspended') ctx.resume();
+        stopAll();
+        if (starters[name]) starters[name]();
+        currentSound = name;
+        isPlaying = true;
+    }
+
+    function stop() {
+        stopAll();
+        isPlaying = false;
+    }
+
+    var btn = document.getElementById('ambient-toggle');
+    var panel = document.getElementById('ambient-panel');
+    var soundBtns = panel.querySelectorAll('button[data-sound]');
+
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        panel.classList.toggle('hidden');
+    });
+
+    soundBtns.forEach(function(b) {
+        b.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var sound = this.dataset.sound;
+            soundBtns.forEach(function(x) { x.classList.remove('active'); });
+            if (isPlaying && currentSound === sound) {
+                stop();
+            } else {
+                this.classList.add('active');
+                play(sound);
+            }
+            panel.classList.add('hidden');
+        });
+    });
+
+    document.addEventListener('click', function() { panel.classList.add('hidden'); });
+})();
+</script>
+<button id="fireworks-btn" title="烟花模式" data-turbo-permanent>🎆</button>
+
+<link rel="stylesheet" href="/fireworks/style.css" data-turbo-track="reload">
+<script src="/fireworks/fireworks-bundle.js" data-turbo-eval="false"></script>
+<script data-turbo-eval="false">
+(function() {
+  
+  var btn = document.getElementById('fireworks-btn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (!window.FireworksMode) return;
+      if (window._fwRunning) return;
+      window.FireworksMode.start();
+    });
+  }
+
+  
+  var navCount = 0;
+  document.addEventListener('turbo:load', function() {
+    navCount++;
+    if (navCount === 1) return; 
+
+    var toggle = document.getElementById('dark-mode-toggle');
+    if (toggle && !toggle.dataset.fwFixed) {
+      toggle.dataset.fwFixed = '1';
+      toggle.addEventListener('click', function() {
+        var el = document.documentElement;
+        el.dataset.scheme = el.dataset.scheme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('StackColorScheme', el.dataset.scheme);
+      });
+    }
+  });
+})();
+</script>
+    </body>
+</html>

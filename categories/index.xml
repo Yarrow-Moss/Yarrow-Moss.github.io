@@ -7,18 +7,10 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>雅尼克.莫(Yannick.Mo)</copyright>
-        <lastBuildDate>Fri, 31 Jul 2026 00:00:00 +0800</lastBuildDate><atom:link href="https://Yannick-Mo.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>AI</title>
-        <link>https://Yannick-Mo.github.io/categories/ai/</link>
-        <pubDate>Fri, 31 Jul 2026 00:00:00 +0800</pubDate>
-        
-        <guid>https://Yannick-Mo.github.io/categories/ai/</guid>
-        <description></description>
-        </item>
-        <item>
+        <lastBuildDate>Wed, 29 Jul 2026 13:51:28 +0800</lastBuildDate><atom:link href="https://Yannick-Mo.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>NLP</title>
         <link>https://Yannick-Mo.github.io/categories/nlp/</link>
-        <pubDate>Wed, 29 Jul 2026 14:14:00 +0800</pubDate>
+        <pubDate>Wed, 29 Jul 2026 13:51:28 +0800</pubDate>
         
         <guid>https://Yannick-Mo.github.io/categories/nlp/</guid>
         <description></description>
@@ -26,7 +18,7 @@
         <item>
         <title>深度学习</title>
         <link>https://Yannick-Mo.github.io/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
-        <pubDate>Wed, 29 Jul 2026 14:14:00 +0800</pubDate>
+        <pubDate>Wed, 29 Jul 2026 13:51:28 +0800</pubDate>
         
         <guid>https://Yannick-Mo.github.io/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</guid>
         <description></description>
@@ -125,6 +117,30 @@
         <pubDate>Tue, 05 May 2026 00:47:50 +0800</pubDate>
         
         <guid>https://Yannick-Mo.github.io/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Python</title>
+        <link>https://Yannick-Mo.github.io/categories/python/</link>
+        <pubDate>Wed, 11 Mar 2026 00:00:00 +0800</pubDate>
+        
+        <guid>https://Yannick-Mo.github.io/categories/python/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Web开发</title>
+        <link>https://Yannick-Mo.github.io/categories/web%E5%BC%80%E5%8F%91/</link>
+        <pubDate>Wed, 11 Mar 2026 00:00:00 +0800</pubDate>
+        
+        <guid>https://Yannick-Mo.github.io/categories/web%E5%BC%80%E5%8F%91/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>AI</title>
+        <link>https://Yannick-Mo.github.io/categories/ai/</link>
+        <pubDate>Sat, 31 Jan 2026 00:00:00 +0800</pubDate>
+        
+        <guid>https://Yannick-Mo.github.io/categories/ai/</guid>
         <description></description>
         </item>
         <item>
