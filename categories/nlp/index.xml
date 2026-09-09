@@ -421,7 +421,7 @@ X 会分别乘以三个权重矩阵 &lt;code&gt;W_Q, W_K, W_V&lt;/code&gt;（每
         <item>
         <title>Transformer K/V Cache 深度解析</title>
         <link>https://Yannick-Mo.github.io/p/transformer-k/v-cache-%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/</link>
-        <pubDate>Mon, 19 Jan 2026 14:14:00 +0800</pubDate>
+        <pubDate>Sun, 19 Jul 2026 14:14:00 +0800</pubDate>
         
         <guid>https://Yannick-Mo.github.io/p/transformer-k/v-cache-%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/</guid>
         <description>&lt;p&gt;Transformer工程落地的核心痛点。K/V Cache（键值缓存）不仅是加速技巧，更是&lt;strong&gt;大模型推理系统设计的基石&lt;/strong&gt;。&lt;/p&gt;
